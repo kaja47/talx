@@ -20,9 +20,10 @@ function primes($nums) {
   }
 }
 
+$max = isset($argv[1]) ? $argv[1] : 100;
 
 $ps = primes(ints(2));
 foreach ($ps as $p) {
-  if ($p > 1000) break;
+  if ($p > $max) break;
   echo $p." ";
 }

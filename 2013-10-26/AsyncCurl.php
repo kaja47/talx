@@ -134,6 +134,7 @@ function crawlCallbacks() {
             $id = $thread->no;
             $q = $curl->get("http://api.4chan.org/$letter/res/$id.json");
             $q(function ($json, $err) use ($letter, $id) {
+              echo "/$letter/$id\n";
               foreach (json_decode($json)->posts as $post) {
               if(preg_match('~skype~i', $post->com))
                 echo "https://boards.4chan.org/$letter/res/$id\n";
@@ -150,7 +151,7 @@ function crawlCallbacks() {
 
 
 function runCallbacks($f) {
-  $gen = self::getGenerator($f);
+  $gen = ($f instanceof \Closure) ? $f() : $f;
 
   $recur = function ($success, $exception) use ($gen, &$recur) {
     $x = ($exception !== null) ?  $gen->throw($exception) : $gen->send($success);
@@ -176,6 +177,7 @@ runCallbacks(function () use ($curl) {
       foreach ($page->threads as $thread) {
         $id = $thread->no;
         $json = (yield $curl->get("http://api.4chan.org/$letter/res/$id.json"));
+        echo "/$letter/$id\n";
         foreach (json_decode($json)->posts as $post) {
           if(preg_match('~skype~i', $post->com))
             echo "https://boards.4chan.org/$letter/res/$id\n";
